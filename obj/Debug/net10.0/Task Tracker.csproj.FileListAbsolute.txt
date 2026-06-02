@@ -1,0 +1,14 @@
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\Task Tracker.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\Task Tracker.AssemblyInfoInputs.cache
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\Task Tracker.AssemblyInfo.cs
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\Task Tracker.csproj.CoreCompileInputs.cache
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\Task Tracker.genruntimeconfig.cache
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\bin\Debug\net10.0\tasktracker.exe
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\bin\Debug\net10.0\tasktracker.deps.json
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\bin\Debug\net10.0\tasktracker.runtimeconfig.json
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\bin\Debug\net10.0\tasktracker.dll
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\bin\Debug\net10.0\tasktracker.pdb
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\tasktracker.dll
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\refint\tasktracker.dll
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\tasktracker.pdb
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\ref\tasktracker.dll
