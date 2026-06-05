@@ -3,7 +3,7 @@ using System.ComponentModel.Design;
 using System.Data;
 using System.Security.AccessControl;
 using System.Text.Json;
-
+using TaskTracker;
 
 string[] command = args;
 
@@ -21,27 +21,27 @@ else
             break;
 
         case "add":
-            addTask(args);
+            addTask(command);
             break;
 
         case "update":
-            updateTask(args);
+            updateTask(command);
             break;
 
         case "delete":
-            deleteTask(args);
+            deleteTask(command);
             break;
 
         case "mark-in-progress":
-            changeTaskStatus(args, "In-Progress");
+            changeTaskStatus(command, "In-Progress");
             break;
 
         case "mark-done":
-            changeTaskStatus(args, "Done");
+            changeTaskStatus(command, "Done");
             break;
         
         case "mark-todo":
-            changeTaskStatus(args, "To do");
+            changeTaskStatus(command, "To do");
             break;
         
         case "list":
@@ -58,15 +58,22 @@ else
 
 void addTask(string[] command)
 {
-
+    //Verify if the input command matches add operation arguments
     if(command.Length != 2)
     {
-        Console.WriteLine("Insuficient arguments, please add a name for your task in the following format:");
+        Console.WriteLine("Unknown arguments, please add a name for your task in the following format:");
         Console.WriteLine("add [your description in quotes]");
         return;
     }
 
-    TaskTracker.Task newTask = new TaskTracker.Task(generateNewId(), command[1]);  
+    SavedTasks savedTasks = new SavedTasks();
+    TaskTracker.Task newTask = new TaskTracker.Task(savedTasks.LastId + 1, command[1]);
+
+    savedTasks.LastId = newTask.Id;
+    savedTasks.Tasks.Add(newTask);
+    savedTasks.Save(newTask);
+
+    Console.WriteLine($"Task '{newTask.Description}' added successfully.");  
 }
 
 void updateTask(string[] command)
@@ -93,11 +100,5 @@ void listAllCommands()
 {
     
 }
-
-int generateNewId()
-{
-    return 0;
-}
-
 
 

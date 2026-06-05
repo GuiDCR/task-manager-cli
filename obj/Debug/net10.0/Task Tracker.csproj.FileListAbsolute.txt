@@ -12,3 +12,4 @@ C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\tasktracker
 C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\refint\tasktracker.dll
 C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\tasktracker.pdb
 C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\ref\tasktracker.dll
+C:\Users\guilh\Documents\MeusProjetos\Task Tracker\obj\Debug\net10.0\Task Tracker.sourcelink.json
