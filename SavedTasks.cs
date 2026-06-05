@@ -1,59 +1,75 @@
+using System.Data.Common;
 using System.Text.Json;
 
 namespace TaskTracker;
-
+public class TaskData
+{
+    public int LastId {get; set; }
+    public List<Task> Tasks {get; set;} = new List<Task>();
+}
 public class SavedTasks
 {
-    private const string Path = "./tasks.json";
-    public int LastId {get; set; }
-    public List<Task> Tasks {get; set; }
-    
+    public string Path {get; set;} = "./savedTasks.json";
+    public TaskData FileContent {get; set;}
+
+
     public SavedTasks()
     {
-        Load(Path);
+        FileContent = new TaskData();
     }
-    public void Load(string path)
+    public void Load()
     {
-        if (!File.Exists(path))
+        if (!File.Exists(Path))
         {
-            LastId = 0;
-            Tasks = new List<Task>(){};
-            string json = JsonSerializer.Serialize(this);
-            File.WriteAllText(path, json);
+            //Creates a new empty json file if not exist
+            LoadEmptySave();
+            Save();
         }
         else
         {
             try
             {
-                string json = File.ReadAllText(path);
-                SavedTasks? database = JsonSerializer.Deserialize<SavedTasks>(json);
+                string json = File.ReadAllText(Path);
+                TaskData? database = JsonSerializer.Deserialize<TaskData>(json);
                 
                 if(database == null)
                 {
+                    //Loads an empty save if the existing save file returned null
                     Console.WriteLine("The data found in tasks file was null");
-                    Console.WriteLine($"Loading a empty task list");
-                    LastId = 0;
-                    Tasks = new List<Task>();
+                    Console.WriteLine($"Loading an empty task list");
+                    LoadEmptySave();
                 }
                 else
                 {
-                    LastId = database.LastId;
-                    Tasks = database.Tasks;
+                    FileContent.LastId = database.LastId;
+                    FileContent.Tasks = database.Tasks;
                 }
             }
             catch (JsonException ex)
             {
-                Console.WriteLine($"The existing task file is invalid!: {ex.Message}");
-                Console.WriteLine($"Loading a empty task list");
-                LastId = 0;
-                Tasks = new List<Task>(){};
+                //If the existing json file not matches json structure an empty save is loaded
+                Console.WriteLine($"The existing task file is corrupted!: {ex.Message}");
+                Console.WriteLine($"Loading an empty task list");
+                LoadEmptySave();
+                
             }
   
         }
     }
-    public void Save(Task newTask)
+    public void Save()
     {
-        string json = JsonSerializer.Serialize(this);
+        JsonSerializerOptions options = new JsonSerializerOptions 
+        { 
+            WriteIndented = true,
+            IncludeFields = true
+        };
+        string json = JsonSerializer.Serialize(FileContent, options);
         File.WriteAllText(Path, json);
+    }
+
+    public void LoadEmptySave()
+    {
+        FileContent.LastId = 0;
+        FileContent.Tasks = new List<Task>();
     }
 }

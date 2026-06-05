@@ -59,19 +59,21 @@ else
 void addTask(string[] command)
 {
     //Verify if the input command matches add operation arguments
-    if(command.Length != 2)
+    if(command.Length != 2 || string.IsNullOrEmpty(command[2]))
     {
         Console.WriteLine("Unknown arguments, please add a name for your task in the following format:");
         Console.WriteLine("add [your description in quotes]");
         return;
     }
 
-    SavedTasks savedTasks = new SavedTasks();
-    TaskTracker.Task newTask = new TaskTracker.Task(savedTasks.LastId + 1, command[1]);
 
-    savedTasks.LastId = newTask.Id;
-    savedTasks.Tasks.Add(newTask);
-    savedTasks.Save(newTask);
+    SavedTasks savedTasks = new SavedTasks();
+    savedTasks.Load();
+
+    TaskTracker.Task newTask = new TaskTracker.Task(savedTasks.FileContent.LastId + 1, command[1]);
+    savedTasks.FileContent.Tasks.Add(newTask);
+    savedTasks.FileContent.LastId = newTask.Id;
+    savedTasks.Save();
 
     Console.WriteLine($"Task '{newTask.Description}' added successfully.");  
 }

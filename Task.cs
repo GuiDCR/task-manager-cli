@@ -9,17 +9,16 @@ public class Task
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public Task(int id, string name)
+
+    public Task()
+    {
+    }
+    public Task(int id, string description)
     {
         Id = id;
-        Description = name;
+        Description = description;
         Status = "todo";
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
-    }
-   
-    public void Update(int id)
-    {
-        
     }
 }
