@@ -9,7 +9,7 @@ public class Task
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-
+    //Empty task constructor necessary to JsonDeserializer work
     public Task()
     {
     }

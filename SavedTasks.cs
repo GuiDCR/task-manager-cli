@@ -17,6 +17,8 @@ public class SavedTasks
     {
         FileContent = new TaskData();
     }
+
+    //Transfer json object atribute values to the current instance
     public void Load()
     {
         if (!File.Exists(Path))
@@ -55,7 +57,10 @@ public class SavedTasks
             }
   
         }
+
+
     }
+    //Upload the SavedTasks object to json file
     public void Save()
     {
         JsonSerializerOptions options = new JsonSerializerOptions 
@@ -67,6 +72,16 @@ public class SavedTasks
         File.WriteAllText(Path, json);
     }
 
+    public void AddTask(Task task)
+    {
+        FileContent.Tasks.Add(task);
+        FileContent.LastId = task.Id;
+    }
+
+    public bool IsEmpty()
+    {
+        return FileContent.Tasks.Count == 0;
+    }
     public void LoadEmptySave()
     {
         FileContent.LastId = 0;

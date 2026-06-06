@@ -6,6 +6,7 @@ using System.Text.Json;
 using TaskTracker;
 
 string[] command = args;
+SavedTasks savedTasks = new SavedTasks();
 
 if (command.Length == 0)
 {
@@ -59,23 +60,26 @@ else
 void addTask(string[] command)
 {
     //Verify if the input command matches add operation arguments
-    if(command.Length != 2 || string.IsNullOrEmpty(command[2]))
+    if(command.Length != 2)
     {
         Console.WriteLine("Unknown arguments, please add a name for your task in the following format:");
         Console.WriteLine("add [your description in quotes]");
         return;
     }
 
+    if (string.IsNullOrEmpty(command[1]))
+    {
+        Console.WriteLine("Invalid task name! Cannot have a blank or null description");
+        return;
+    }
 
-    SavedTasks savedTasks = new SavedTasks();
     savedTasks.Load();
-
     TaskTracker.Task newTask = new TaskTracker.Task(savedTasks.FileContent.LastId + 1, command[1]);
-    savedTasks.FileContent.Tasks.Add(newTask);
-    savedTasks.FileContent.LastId = newTask.Id;
+    savedTasks.AddTask(newTask);
     savedTasks.Save();
 
     Console.WriteLine($"Task '{newTask.Description}' added successfully.");  
+    
 }
 
 void updateTask(string[] command)
@@ -95,7 +99,21 @@ void changeTaskStatus(string[] command, string newStatus)
 
 void listTasks(string[] args)
 {
-    
+    savedTasks.Load();
+
+    if(savedTasks.IsEmpty())
+        Console.WriteLine("Your task list is empty.");
+    else
+    {
+        //Header
+        Console.WriteLine("ID\tDescription\tStatus\tCreatedAt\tLastUpdate");
+        foreach(var task in savedTasks.FileContent.Tasks)
+        {
+            Console.WriteLine("");
+            Console.Write($"{task.Id}\t{task.Description}\t{task.Status}\t{task.CreatedAt}\t{task.UpdatedAt}");
+        }
+    }
+        
 }
 
 void listAllCommands()
