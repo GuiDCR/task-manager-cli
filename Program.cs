@@ -6,12 +6,14 @@ using System.Text.Json;
 using TaskTracker;
 
 string[] command = args;
+string helpMessage = "Use 'tasktracker help' to see all available commands and its arguments";
 SavedTasks savedTasks = new SavedTasks();
+
 
 if (command.Length == 0)
 {
     Console.WriteLine("Usage: tasktracker [commands]");
-    Console.WriteLine("Use 'tasktracker help' to see all available commands");
+    Console.WriteLine(helpMessage);
 }
 else
 {
@@ -51,7 +53,7 @@ else
 
         default:
             Console.WriteLine("Unknown command");
-            Console.WriteLine("Use 'tasktracker help' to see all available commands");
+            Console.WriteLine(helpMessage);
             break;
     }
     
@@ -78,7 +80,7 @@ void addTask(string[] command)
     savedTasks.AddTask(newTask);
     savedTasks.Save();
 
-    Console.WriteLine($"Task '{newTask.Description}' added successfully.");  
+    Console.WriteLine($"Task '{newTask.Description}' added successfully (ID: {newTask.Id})");  
     
 }
 
@@ -99,21 +101,79 @@ void changeTaskStatus(string[] command, string newStatus)
 
 void listTasks(string[] args)
 {
+    
     savedTasks.Load();
 
-    if(savedTasks.IsEmpty())
+    if (savedTasks.IsEmpty())
+    {
         Console.WriteLine("Your task list is empty.");
+        return;
+    }
+
+    if(command.Length > 2)
+    {
+        Console.WriteLine("Invalid argument for tasktracker list");
+        Console.WriteLine(helpMessage);
+    }
+    else if (command.Length == 1)
+    {
+        listByStatus();
+    }
     else
     {
-        //Header
-        Console.WriteLine("ID\tDescription\tStatus\tCreatedAt\tLastUpdate");
-        foreach(var task in savedTasks.FileContent.Tasks)
+        switch (command[1])
         {
-            Console.WriteLine("");
-            Console.Write($"{task.Id}\t{task.Description}\t{task.Status}\t{task.CreatedAt}\t{task.UpdatedAt}");
+            case "todo":
+
+                listByStatus("todo");
+                break;
+
+            case "done":
+
+                listByStatus("done");
+                break;
+            
+            case "in-progress":
+
+                listByStatus("in-progress");
+                break;
+            
+            default:
+
+                Console.WriteLine("Invalid argument for tasktracker list");
+                Console.WriteLine(helpMessage);
+                break;
+        } 
+    }   
+}
+
+
+void listByStatus(string status = "")
+{
+    string header = $"{"ID".PadRight(5)}{"Description".PadRight(20)}{"Status".PadRight(15)}{"CreatedAt".PadRight(25)}{"LastUpdate".PadRight(25)}";
+    int counter = 0;
+
+    Console.WriteLine(header);
+    foreach(var task in savedTasks.FileContent.Tasks)
+    {
+        /*If a status is specified in method parameter, only tasks with that status will be printed,
+          else all tasks will be printed
+        */
+        if(task.Status == status || string.IsNullOrEmpty(status))
+        {
+           printTask(task);
+           counter += 1;
         }
     }
-        
+    
+    // It provides feedback to the user if they have requested to list tasks with a certain status.
+    if(counter == 0 && !string.IsNullOrEmpty(status))
+        Console.WriteLine($"No task labeled as '{status}' was found");
+}
+
+void printTask(TaskTracker.Task task)
+{
+    Console.WriteLine($"{task.Id.ToString().PadRight(5)}{task.Description.PadRight(20)}{task.Status.PadRight(15)}{task.CreatedAt.ToString().PadRight(25)}{task.UpdatedAt.ToString().PadRight(25)}");
 }
 
 void listAllCommands()
