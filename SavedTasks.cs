@@ -87,4 +87,18 @@ public class SavedTasks
         FileContent.LastId = 0;
         FileContent.Tasks = new List<Task>();
     }
+
+    public void ChangeTaskStatus(int id, string status)
+    {
+        for(int i = 0; i < FileContent.Tasks.Count; i++)
+        {
+            if (FileContent.Tasks[i].Id == id)
+            {
+                FileContent.Tasks[i].Status = status;
+                FileContent.Tasks[i].UpdatedAt = DateTime.Now;
+                break;
+            }
+        }
+        
+    }
 }

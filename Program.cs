@@ -24,31 +24,31 @@ else
             break;
 
         case "add":
-            addTask(command);
+            addTask();
             break;
 
         case "update":
-            updateTask(command);
+            updateTask();
             break;
 
         case "delete":
-            deleteTask(command);
+            deleteTask();
             break;
 
         case "mark-in-progress":
-            changeTaskStatus(command, "In-Progress");
+            changeTaskStatus("in-progress");
             break;
 
         case "mark-done":
-            changeTaskStatus(command, "Done");
+            changeTaskStatus("done");
             break;
         
         case "mark-todo":
-            changeTaskStatus(command, "To do");
+            changeTaskStatus("todo");
             break;
         
         case "list":
-            listTasks(args);
+            listTasks();
             break;
 
         default:
@@ -59,7 +59,7 @@ else
     
 }
 
-void addTask(string[] command)
+void addTask()
 {
     //Verify if the input command matches add operation arguments
     if(command.Length != 2)
@@ -84,22 +84,42 @@ void addTask(string[] command)
     
 }
 
-void updateTask(string[] command)
+void updateTask()
 {
 
 }
 
-void deleteTask(string[] command)
-{
-    
-}
-
-void changeTaskStatus(string[] command, string newStatus)
+void deleteTask()
 {
     
 }
 
-void listTasks(string[] args)
+void changeTaskStatus(string newStatus)
+{
+    savedTasks.Load();
+    
+    if(command.Length != 2)
+    {
+        Console.WriteLine($"Invalid argument for tasktracker mark-{newStatus}.");
+        Console.WriteLine(helpMessage);
+        return;
+    }
+    
+    //Try to convert id string to an integer number if not succeed the program finish 
+    if(int.TryParse(command[1], out int id))
+    {
+        savedTasks.ChangeTaskStatus(id, newStatus);
+        Console.WriteLine($"Successfully changed task(id {id}) to '{newStatus}'");
+    }
+    else
+    {
+        Console.WriteLine($"'{command[1]}' not represent a valid integer id number");
+        Console.WriteLine(helpMessage);
+    }
+
+}
+
+void listTasks()
 {
     
     savedTasks.Load();
@@ -124,22 +144,18 @@ void listTasks(string[] args)
         switch (command[1])
         {
             case "todo":
-
                 listByStatus("todo");
                 break;
 
             case "done":
-
                 listByStatus("done");
                 break;
             
             case "in-progress":
-
                 listByStatus("in-progress");
                 break;
             
             default:
-
                 Console.WriteLine("Invalid argument for tasktracker list");
                 Console.WriteLine(helpMessage);
                 break;
