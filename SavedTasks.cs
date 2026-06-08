@@ -18,14 +18,18 @@ public class SavedTasks
         FileContent = new TaskData();
     }
 
-    //Transfer json object atribute values to the current instance
-    public void Load()
+    /*
+    Transfer json object atribute values to the current instance
+    returns true if load was successful, false case null or corrupted   
+    */
+    public bool Load()
     {
         if (!File.Exists(Path))
         {
             //Creates a new empty json file if not exist
             LoadEmptySave();
             Save();
+            return true;
         }
         else
         {
@@ -36,24 +40,20 @@ public class SavedTasks
                 
                 if(database == null)
                 {
-                    //Loads an empty save if the existing save file returned null
-                    Console.WriteLine("The data found in tasks file was null");
-                    Console.WriteLine($"Loading an empty task list");
-                    LoadEmptySave();
+                    return false;
                 }
                 else
                 {
                     FileContent.LastId = database.LastId;
                     FileContent.Tasks = database.Tasks;
+                    return true;
                 }
             }
             catch (JsonException ex)
             {
                 //If the existing json file not matches json structure an empty save is loaded
                 Console.WriteLine($"The existing task file is corrupted!: {ex.Message}");
-                Console.WriteLine($"Loading an empty task list");
-                LoadEmptySave();
-                
+                return false;            
             }
   
         }

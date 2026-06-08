@@ -7,8 +7,15 @@ using TaskTracker;
 
 string[] command = args;
 string helpMessage = "Use 'tasktracker help' to see all available commands and its arguments";
+string loadErrorMessage = "Error: Failed to load tasks file. The file may be corrupted or have invalid content.\nTip: You can delete 'tasks.json' and start fresh, or fix it manually.";
+
 SavedTasks savedTasks = new SavedTasks();
 
+if (!savedTasks.Load())
+{
+    Console.WriteLine(loadErrorMessage);
+    return;    
+}
 
 if (command.Length == 0)
 {
@@ -69,13 +76,11 @@ void addTask()
         return;
     }
 
-    if (string.IsNullOrEmpty(command[1]))
+    if (string.IsNullOrWhiteSpace(command[1]))
     {
         Console.WriteLine("Invalid task name! Cannot have a blank or null description");
         return;
     }
-
-    savedTasks.Load();
     TaskTracker.Task newTask = new TaskTracker.Task(savedTasks.FileContent.LastId + 1, command[1]);
     savedTasks.AddTask(newTask);
     savedTasks.Save();
@@ -86,7 +91,7 @@ void addTask()
 
 void updateTask()
 {
-
+    
 }
 
 void deleteTask()
@@ -96,8 +101,6 @@ void deleteTask()
 
 void changeTaskStatus(string newStatus)
 {
-    savedTasks.Load();
-    
     if(command.Length != 2)
     {
         Console.WriteLine($"Invalid argument for tasktracker mark-{newStatus}.");
@@ -122,9 +125,6 @@ void changeTaskStatus(string newStatus)
 
 void listTasks()
 {
-    
-    savedTasks.Load();
-
     if (savedTasks.IsEmpty())
     {
         Console.WriteLine("Your task list is empty.");
@@ -197,5 +197,3 @@ void listAllCommands()
 {
     
 }
-
-
