@@ -109,6 +109,7 @@ void changeTaskStatus(string newStatus)
     if(int.TryParse(command[1], out int id))
     {
         savedTasks.ChangeTaskStatus(id, newStatus);
+        savedTasks.Save();
         Console.WriteLine($"Successfully changed task(id {id}) to '{newStatus}'");
     }
     else
