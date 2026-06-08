@@ -11,10 +11,19 @@ string loadErrorMessage = "Error: Failed to load tasks file. The file may be cor
 
 SavedTasks savedTasks = new SavedTasks();
 
-if (!savedTasks.Load())
+try
 {
-    Console.WriteLine(loadErrorMessage);
-    return;    
+    if (!savedTasks.Load())
+    {
+        Console.WriteLine(loadErrorMessage);
+        return;    
+    }    
+}
+catch (Exception ex)
+{
+    //If the existing json file not matches json structure an empty save is loaded
+    Console.WriteLine($"{loadErrorMessage}\n{ex.Message}");
+    return;         
 }
 
 if (command.Length == 0)
@@ -69,12 +78,8 @@ else
 void addTask()
 {
     //Verify if the input command matches add operation arguments
-    if(command.Length != 2)
-    {
-        Console.WriteLine("Unknown arguments, please add a name for your task in the following format:");
-        Console.WriteLine("add [your description in quotes]");
+    if (!validateArgs(2))
         return;
-    }
 
     if (string.IsNullOrWhiteSpace(command[1]))
     {
@@ -96,18 +101,27 @@ void updateTask()
 
 void deleteTask()
 {
-    
+    if (!validateArgs(2))
+        return;
+
+    if(int.TryParse(command[1], out int id))
+    {
+        savedTasks.Remove(id);
+        savedTasks.Save();
+        Console.WriteLine($"Task removed successfully (ID: {id})");
+    }
+    else
+    {
+        Console.WriteLine($"'{command[1]}' not represent a valid integer id number");
+        Console.WriteLine(helpMessage);   
+    }
 }
 
 void changeTaskStatus(string newStatus)
 {
-    if(command.Length != 2)
-    {
-        Console.WriteLine($"Invalid argument for tasktracker mark-{newStatus}.");
-        Console.WriteLine(helpMessage);
+    if (!validateArgs(2))
         return;
-    }
-    
+
     //Try to convert id string to an integer number if not succeed the program finish 
     if(int.TryParse(command[1], out int id))
     {
@@ -131,12 +145,10 @@ void listTasks()
         return;
     }
 
-    if(command.Length > 2)
-    {
-        Console.WriteLine("Invalid argument for tasktracker list");
-        Console.WriteLine(helpMessage);
-    }
-    else if (command.Length == 1)
+    if (!validateArgs(1, 2))
+        return;
+    
+    if (command.Length == 1)
     {
         listByStatus();
     }
@@ -196,4 +208,14 @@ void printTask(TaskTracker.Task task)
 void listAllCommands()
 {
     
+}
+
+bool validateArgs(params int[] validLengths)
+{
+    if (validLengths.Contains(command.Length))
+        return true;
+
+    Console.WriteLine($"Invalid arguments for '{command[0]}'.");
+    Console.WriteLine(helpMessage);
+    return false;
 }

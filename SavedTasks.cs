@@ -32,34 +32,23 @@ public class SavedTasks
             return true;
         }
         else
-        {
-            try
+        { 
+            string json = File.ReadAllText(Path);
+            TaskData? database = JsonSerializer.Deserialize<TaskData>(json);
+            
+            if(database == null)
             {
-                string json = File.ReadAllText(Path);
-                TaskData? database = JsonSerializer.Deserialize<TaskData>(json);
-                
-                if(database == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    FileContent.LastId = database.LastId;
-                    FileContent.Tasks = database.Tasks;
-                    return true;
-                }
+                return false;
             }
-            catch (JsonException ex)
+            else
             {
-                //If the existing json file not matches json structure an empty save is loaded
-                Console.WriteLine($"The existing task file is corrupted!: {ex.Message}");
-                return false;            
+                FileContent.LastId = database.LastId;
+                FileContent.Tasks = database.Tasks;
+                return true;
             }
-  
         }
-
-
     }
+    
     //Upload the SavedTasks object to json file
     public void Save()
     {
@@ -76,6 +65,18 @@ public class SavedTasks
     {
         FileContent.Tasks.Add(task);
         FileContent.LastId = task.Id;
+    }
+
+    public void Remove(int id)
+    {
+        for(int i = 0; i <= FileContent.Tasks.Count() - 1; i++)
+        {
+            if(FileContent.Tasks[i].Id == id)
+            {
+                FileContent.Tasks.RemoveAt(i);
+                break;       
+            }
+        }
     }
 
     public bool IsEmpty()
