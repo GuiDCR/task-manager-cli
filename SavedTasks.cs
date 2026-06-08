@@ -48,7 +48,20 @@ public class SavedTasks
             }
         }
     }
-    
+
+    public void Update(int id, string newName)
+    {
+        for(int i = 0; i <= FileContent.Tasks.Count() - 1; i++)
+        {
+            if(FileContent.Tasks[i].Id == id)
+            {
+                FileContent.Tasks[i].Description = newName;
+                FileContent.Tasks[i].UpdatedAt = DateTime.Now;
+                break;       
+            }
+        }
+    }
+
     //Upload the SavedTasks object to json file
     public void Save()
     {

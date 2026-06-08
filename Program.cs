@@ -96,7 +96,26 @@ void addTask()
 
 void updateTask()
 {
-    
+    if(!validateArgs(3))
+        return;
+
+    if (string.IsNullOrWhiteSpace(command[2]))
+    {
+        Console.WriteLine("Invalid task name! Cannot have a blank or null description");
+        return; 
+    }
+
+    if(int.TryParse(command[1], out int id))
+    {
+        savedTasks.Update(id, command[2]);
+        savedTasks.Save();
+        Console.WriteLine($"Task updated successfully (ID: {id})");
+    }
+    else
+    {
+        Console.WriteLine($"'{command[1]}' not represent a valid integer id number");
+        Console.WriteLine(helpMessage);   
+    }
 }
 
 void deleteTask()
@@ -219,3 +238,6 @@ bool validateArgs(params int[] validLengths)
     Console.WriteLine(helpMessage);
     return false;
 }
+
+
+
