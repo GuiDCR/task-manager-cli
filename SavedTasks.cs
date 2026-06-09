@@ -2,11 +2,13 @@ using System.Data.Common;
 using System.Text.Json;
 
 namespace TaskTracker;
+
 public class TaskData
 {
     public int LastId {get; set; }
     public List<Task> Tasks {get; set;} = new List<Task>();
 }
+
 public class SavedTasks
 {
     public string Path {get; set;} = "./savedTasks.json";

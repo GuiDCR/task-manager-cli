@@ -6,6 +6,7 @@ using System.Text.Json;
 using TaskTracker;
 
 string[] command = args;
+const int maxDescLength = 40;
 string helpMessage = "Use 'tasktracker help' to see all available commands and its arguments";
 string loadErrorMessage = "Error: Failed to load tasks file. The file may be corrupted or have invalid content.\nTip: You can delete 'tasks.json' and start fresh, or fix it manually.";
 
@@ -19,7 +20,7 @@ try
         return;    
     }    
 }
-catch (Exception ex)
+catch (JsonException ex)
 {
     //If the existing json file not matches json structure an empty save is loaded
     Console.WriteLine($"{loadErrorMessage}\n{ex.Message}");
@@ -83,9 +84,16 @@ void addTask()
 
     if (string.IsNullOrWhiteSpace(command[1]))
     {
-        Console.WriteLine("Invalid task name! Cannot have a blank or null description");
+        Console.WriteLine("Invalid task description! Cannot have a blank or null description");
         return;
     }
+
+    if(command[1].Length > maxDescLength)
+    {
+        Console.WriteLine("The task description cannot exceed 40 characters.");
+        return;
+    }
+
     TaskTracker.Task newTask = new TaskTracker.Task(savedTasks.FileContent.LastId + 1, command[1]);
     savedTasks.AddTask(newTask);
     savedTasks.Save();
@@ -198,7 +206,7 @@ void listTasks()
 
 void listByStatus(string status = "")
 {
-    string header = $"{"ID".PadRight(5)}{"Description".PadRight(20)}{"Status".PadRight(15)}{"CreatedAt".PadRight(25)}{"LastUpdate".PadRight(25)}";
+    string header = $"{"ID".PadRight(5)}{"Description".PadRight(maxDescLength + 5)}{"Status".PadRight(15)}{"CreatedAt".PadRight(25)}{"LastUpdate".PadRight(25)}";
     int counter = 0;
 
     Console.WriteLine(header);
@@ -221,12 +229,30 @@ void listByStatus(string status = "")
 
 void printTask(TaskTracker.Task task)
 {
-    Console.WriteLine($"{task.Id.ToString().PadRight(5)}{task.Description.PadRight(20)}{task.Status.PadRight(15)}{task.CreatedAt.ToString().PadRight(25)}{task.UpdatedAt.ToString().PadRight(25)}");
+    Console.WriteLine($"{task.Id.ToString().PadRight(5)}{task.Description.PadRight(maxDescLength + 5)}{task.Status.PadRight(15)}{task.CreatedAt.ToString().PadRight(25)}{task.UpdatedAt.ToString().PadRight(25)}");
 }
 
 void listAllCommands()
 {
-    
+    Console.WriteLine(@"
+    TaskTracker-CLI 1.0.0
+    An cli app that manages and track your to-do tasks
+    Built by: GuiDCR - https://github.com/GuiDCR
+    Project proposed by roadmap.sh
+
+    Usage: tasktracker <command> [<args>]
+
+    Avaiable commands:
+        add <description in quotes>         Add a new task 
+        delete <id>                         Delete a task
+        update <id> <description in quotes> Update a task description
+        list                                List all tasks
+        list <status>                       List tasks by status (todo, in-progress, done)
+        mark-todo <id>                      Mark a task as todo
+        mark-done <id>                      Mark a task as done
+        mark-in-progress <id>               Mark a task as in-progress
+        help                                Show all known commands
+    ");
 }
 
 bool validateArgs(params int[] validLengths)
