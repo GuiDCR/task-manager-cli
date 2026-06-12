@@ -7,6 +7,10 @@
     <RootNamespace>Task_Tracker</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>tasktracker</ToolCommandName>
+    <PackageId>TaskTracker.GuiDCR</PackageId>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
 </Project>

@@ -11,7 +11,9 @@ public class TaskData
 
 public class SavedTasks
 {
-    public string Path {get; set;} = "./savedTasks.json";
+    public string FilePath {get; set;} = System.IO.Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "tasktracker","savedTasks.json"); 
     public TaskData FileContent {get; set;}
 
 
@@ -28,16 +30,23 @@ public class SavedTasks
     {
         try
         {
-            if (!File.Exists(Path))
+            if (!File.Exists(FilePath))
             {
                 //Creates a new empty json file if not exist
+                string? saveFolder = Path.GetDirectoryName(FilePath);
+
+                if (!string.IsNullOrEmpty(saveFolder))
+                    Directory.CreateDirectory(saveFolder);    
+                else
+                    return false;
+                
                 LoadEmptySave();
                 Save();
                 return true;
             }
             else
             { 
-                string json = File.ReadAllText(Path);
+                string json = File.ReadAllText(FilePath);
                 TaskData? database = JsonSerializer.Deserialize<TaskData>(json);
                 
                 if(database == null)
@@ -83,7 +92,7 @@ public class SavedTasks
             IncludeFields = true
         };
         string json = JsonSerializer.Serialize(FileContent, options);
-        File.WriteAllText(Path, json);
+        File.WriteAllText(FilePath, json);
     }
 
     public void AddTask(Task task)
