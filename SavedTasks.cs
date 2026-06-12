@@ -26,42 +26,52 @@ public class SavedTasks
     */
     public bool Load()
     {
-        if (!File.Exists(Path))
+        try
         {
-            //Creates a new empty json file if not exist
-            LoadEmptySave();
-            Save();
-            return true;
-        }
-        else
-        { 
-            string json = File.ReadAllText(Path);
-            TaskData? database = JsonSerializer.Deserialize<TaskData>(json);
-            
-            if(database == null)
+            if (!File.Exists(Path))
             {
-                return false;
-            }
-            else
-            {
-                FileContent.LastId = database.LastId;
-                FileContent.Tasks = database.Tasks;
+                //Creates a new empty json file if not exist
+                LoadEmptySave();
+                Save();
                 return true;
             }
-        }
-    }
-
-    public void Update(int id, string newName)
-    {
-        for(int i = 0; i <= FileContent.Tasks.Count() - 1; i++)
-        {
-            if(FileContent.Tasks[i].Id == id)
-            {
-                FileContent.Tasks[i].Description = newName;
-                FileContent.Tasks[i].UpdatedAt = DateTime.Now;
-                break;       
+            else
+            { 
+                string json = File.ReadAllText(Path);
+                TaskData? database = JsonSerializer.Deserialize<TaskData>(json);
+                
+                if(database == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    FileContent.LastId = database.LastId;
+                    FileContent.Tasks = database.Tasks;
+                    return true;
+                }
             }
         }
+        catch(JsonException ex)
+        {
+            Console.WriteLine($"{ex.Message}");
+            return false;
+        }
+
+    }
+
+    public bool Update(int id, string newName)
+    {
+        int index = FindIndexById(id);
+
+        if(index == -1)
+        {
+            return false;
+        }
+
+        FileContent.Tasks[index].Description = newName;
+        FileContent.Tasks[index].UpdatedAt = DateTime.Now;
+        return true;
     }
 
     //Upload the SavedTasks object to json file
@@ -82,16 +92,16 @@ public class SavedTasks
         FileContent.LastId = task.Id;
     }
 
-    public void Remove(int id)
+    public bool Remove(int id)
     {
-        for(int i = 0; i <= FileContent.Tasks.Count() - 1; i++)
+        int index = FindIndexById(id);
+
+        if(index == -1)
         {
-            if(FileContent.Tasks[i].Id == id)
-            {
-                FileContent.Tasks.RemoveAt(i);
-                break;       
-            }
+            return false;
         }
+        FileContent.Tasks.RemoveAt(index);
+        return true;            
     }
 
     public bool IsEmpty()
@@ -104,17 +114,30 @@ public class SavedTasks
         FileContent.Tasks = new List<Task>();
     }
 
-    public void ChangeTaskStatus(int id, string status)
+    public bool ChangeTaskStatus(int id, string status)
+    {
+        int index = FindIndexById(id);
+
+        if(index == -1)
+        {
+            return false;
+        }
+
+        FileContent.Tasks[index].Status = status;
+        FileContent.Tasks[index].UpdatedAt = DateTime.Now;
+        return true;
+    }
+
+    public int FindIndexById(int id)
     {
         for(int i = 0; i < FileContent.Tasks.Count; i++)
         {
             if (FileContent.Tasks[i].Id == id)
             {
-                FileContent.Tasks[i].Status = status;
-                FileContent.Tasks[i].UpdatedAt = DateTime.Now;
-                break;
+                return i;
             }
         }
-        
+        //Implies that the specified id was not found 
+        return -1;
     }
 }

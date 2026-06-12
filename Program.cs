@@ -12,20 +12,14 @@ string loadErrorMessage = "Error: Failed to load tasks file. The file may be cor
 
 SavedTasks savedTasks = new SavedTasks();
 
-try
+
+if (!savedTasks.Load())
 {
-    if (!savedTasks.Load())
-    {
-        Console.WriteLine(loadErrorMessage);
-        return;    
-    }    
-}
-catch (JsonException ex)
-{
-    //If the existing json file not matches json structure an empty save is loaded
-    Console.WriteLine($"{loadErrorMessage}\n{ex.Message}");
-    return;         
-}
+    Console.WriteLine(loadErrorMessage);
+    return;    
+}    
+
+
 
 if (command.Length == 0)
 {
@@ -113,34 +107,45 @@ void updateTask()
         return; 
     }
 
-    if(int.TryParse(command[1], out int id))
+    if(!int.TryParse(command[1], out int id))
     {
-        savedTasks.Update(id, command[2]);
+        Console.WriteLine($"'{command[1]}' not represent a valid integer id number");
+        Console.WriteLine(helpMessage);
+        return;
+    }
+
+    if(savedTasks.Update(id, command[2]))
+    {
         savedTasks.Save();
         Console.WriteLine($"Task updated successfully (ID: {id})");
     }
     else
     {
-        Console.WriteLine($"'{command[1]}' not represent a valid integer id number");
-        Console.WriteLine(helpMessage);   
+        Console.WriteLine($"Task (ID: {id}) not found");
     }
 }
+        
 
 void deleteTask()
 {
     if (!validateArgs(2))
         return;
 
-    if(int.TryParse(command[1], out int id))
+    if(!int.TryParse(command[1], out int id))
     {
-        savedTasks.Remove(id);
+        Console.WriteLine($"'{command[1]}' not represent a valid integer id number");
+        Console.WriteLine(helpMessage);  
+        return; 
+    }
+
+    if (savedTasks.Remove(id))
+    {
         savedTasks.Save();
         Console.WriteLine($"Task removed successfully (ID: {id})");
     }
     else
     {
-        Console.WriteLine($"'{command[1]}' not represent a valid integer id number");
-        Console.WriteLine(helpMessage);   
+        Console.WriteLine($"Task (ID: {id}) not found");
     }
 }
 
@@ -149,32 +154,39 @@ void changeTaskStatus(string newStatus)
     if (!validateArgs(2))
         return;
 
-    //Try to convert id string to an integer number if not succeed the program finish 
-    if(int.TryParse(command[1], out int id))
+   if(!int.TryParse(command[1], out int id))
     {
-        savedTasks.ChangeTaskStatus(id, newStatus);
+        Console.WriteLine($"'{command[1]}' not represent a valid integer id number");
+        Console.WriteLine(helpMessage);  
+        return; 
+    }
+
+    if (savedTasks.ChangeTaskStatus(id, newStatus))
+    {
         savedTasks.Save();
         Console.WriteLine($"Successfully changed task(id {id}) to '{newStatus}'");
     }
     else
     {
-        Console.WriteLine($"'{command[1]}' not represent a valid integer id number");
-        Console.WriteLine(helpMessage);
+        Console.WriteLine($"Task (ID: {id}) not found");
     }
 
 }
 
+
+
 void listTasks()
 {
+
+    if (!validateArgs(1, 2))
+        return;
+    
     if (savedTasks.IsEmpty())
     {
         Console.WriteLine("Your task list is empty.");
         return;
     }
 
-    if (!validateArgs(1, 2))
-        return;
-    
     if (command.Length == 1)
     {
         listByStatus();
