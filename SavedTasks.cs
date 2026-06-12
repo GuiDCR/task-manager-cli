@@ -104,6 +104,11 @@ public class SavedTasks
         return true;            
     }
 
+    public void RemoveAllTasks()
+    {
+        FileContent.Tasks.Clear();
+        FileContent.LastId = 0;
+    }
     public bool IsEmpty()
     {
         return FileContent.Tasks.Count == 0;

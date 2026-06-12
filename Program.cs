@@ -72,7 +72,7 @@ else
 
 void addTask()
 {
-    //Verify if the input command matches add operation arguments
+    
     if (!validateArgs(2))
         return;
 
@@ -86,6 +86,12 @@ void addTask()
     {
         Console.WriteLine("The task description cannot exceed 40 characters.");
         return;
+    }
+
+    //Resets the lastId number if the list get empty again
+    if (savedTasks.IsEmpty())
+    {
+        savedTasks.FileContent.LastId = 0;
     }
 
     TaskTracker.Task newTask = new TaskTracker.Task(savedTasks.FileContent.LastId + 1, command[1]);
@@ -130,6 +136,25 @@ void deleteTask()
 {
     if (!validateArgs(2))
         return;
+
+    if(command[1] == "--all")
+    {
+        Console.WriteLine("Do you really want to delete all tasks? (y/n)");
+        string? input = Console.ReadLine();
+
+        if(input != null && input.Trim().ToLower() == "y")
+        {
+            savedTasks.RemoveAllTasks();
+            savedTasks.Save();
+            Console.WriteLine("All tasks were deleted successfully");
+            return;
+        }
+        else
+        {
+            Console.WriteLine("Operation suspended");
+            return;
+        }
+    }
 
     if(!int.TryParse(command[1], out int id))
     {
@@ -252,18 +277,18 @@ void listAllCommands()
     Built by: GuiDCR - https://github.com/GuiDCR
     Project proposed by roadmap.sh
 
-    Usage: tasktracker <command> [<args>]
+    Usage: tasktracker <command> [<args>] [command options]
 
     Avaiable commands:
-        add <description in quotes>         Add a new task 
-        delete <id>                         Delete a task
-        update <id> <description in quotes> Update a task description
-        list                                List all tasks
-        list <status>                       List tasks by status (todo, in-progress, done)
-        mark-todo <id>                      Mark a task as todo
-        mark-done <id>                      Mark a task as done
-        mark-in-progress <id>               Mark a task as in-progress
-        help                                Show all known commands
+        add <description in quotes>             Add a new task 
+        delete <id> [--all]                     Delete a task
+        update <id> <description in quotes>     Update a task description
+        list                                    List all tasks
+        list <status>                           List tasks by status (todo, in-progress, done)
+        mark-todo <id>                          Mark a task as todo
+        mark-done <id>                          Mark a task as done
+        mark-in-progress <id>                   Mark a task as in-progress
+        help                                    Show all known commands
     ");
 }
 
